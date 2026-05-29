@@ -22,6 +22,10 @@ import {
   FileText,
   ChevronRight,
 } from "lucide-react";
+import {
+  isAdminLoggedIn,
+  logoutAdmin,
+} from "@/lib/auth";
 
 import heroCampus from "@/assets/hero-campus.jpg";
 import principalImg from "@/assets/principal.jpg";
@@ -45,27 +49,31 @@ export const Route = createFileRoute("/")({
     ],
   }),
 });
-
+const admin = isAdminLoggedIn();
 const nav = [
   { label: "Home", href: "#home" },
   { label: "About", href: "#about" },
   { label: "Departments", href: "#departments" },
   { label: "Faculty", href: "#faculty" },
+  { label: "Events", href: "/Events" },
+  { label: "Login", href: "/Login" },
   { label: "Careers", href: "#careers" },
   { label: "Notices", href: "#notices" },
   { label: "Gallery", href: "#gallery" },
   { label: "Contact", href: "#contact" },
 ];
 
+
 const quickAccess = [
-  { title: "Departments", sub: "CME & ECE", icon: GraduationCap },
-  { title: "Faculty", sub: "Meet our team", icon: Users },
-  { title: "Placements", sub: "Strong record", icon: Briefcase },
-  { title: "Notices", sub: "Latest updates", icon: Bell },
-  { title: "Scholarships", sub: "SC/ST/BC/EBC", icon: Award },
-  { title: "Downloads", sub: "Forms & syllabus", icon: Download },
-  { title: "Results", sub: "Sem & exam", icon: FileText },
-  { title: "Library", sub: "Books & e-resources", icon: Library },
+  { title: "Departments", sub: "CME & ECE", icon: GraduationCap, href: "#departments" },
+  { title: "Faculty", sub: "Meet our team", icon: Users, href: "#faculty" },
+  { title: "Events", sub: "Workshops & celebrations", icon: Trophy, href: "/Events" },
+  { title: "Placements", sub: "Strong record", icon: Briefcase, href: "#careers" },
+  { title: "Notices", sub: "Latest updates", icon: Bell, href: "#notices" },
+  { title: "Scholarships", sub: "SC/ST/BC/EBC", icon: Award, href: "#scholarships" },
+  { title: "Downloads", sub: "Forms & syllabus", icon: Download, href: "#downloads" },
+  { title: "Results", sub: "Sem & exam", icon: FileText, href: "#results" },
+  { title: "Library", sub: "Books & e-resources", icon: Library, href: "#library" },
 ];
 
 const whyUs = [
@@ -207,7 +215,7 @@ function Index() {
             {quickAccess.map((q) => (
               <a
                 key={q.title}
-                href="#"
+                href={q.href}
                 className="group rounded-2xl border border-border bg-card p-5 hover:border-gold hover:shadow-lg hover:-translate-y-0.5 transition-all"
               >
                 <div className="h-10 w-10 rounded-xl bg-secondary text-navy grid place-items-center group-hover:bg-gold group-hover:text-gold-foreground transition-colors">
