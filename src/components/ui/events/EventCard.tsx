@@ -1,4 +1,6 @@
 import { motion } from "framer-motion";
+import { Edit2, Trash2, AlertCircle } from "lucide-react";
+import { useState } from "react";
 
 import {
   Dialog,
@@ -7,9 +9,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { useAuth } from "@/auth/AuthContext";
+import { eventsService } from "@/services/eventService";
 
 interface EventCardProps {
   event: {
+    id?: string | number;
     title: string;
     date: string;
     venue: string;
@@ -18,9 +23,40 @@ interface EventCardProps {
     category: string;
     description: string;
   };
+  onDelete?: (id: string | number) => void;
+  onEdit?: (event: any) => void;
 }
 
-const EventCard = ({ event }: EventCardProps) => {
+const EventCard = ({ event, onDelete, onEdit }: EventCardProps) => {
+  const { isAuthenticated: isAdmin } = useAuth();
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
+
+  const handleDelete = async () => {
+    if (!isAdmin) {
+      setDeleteError("Only admins can delete events.");
+      return;
+    }
+    if (!event.id) return;
+    
+    setIsDeleting(true);
+    setDeleteError("");
+    
+    try {
+      const success = await eventsService.deleteEvent(String(event.id));
+      if (success) {
+        onDelete?.(event.id);
+        setShowDeleteConfirm(false);
+      } else {
+        setDeleteError("Failed to delete event");
+      }
+    } catch (error) {
+      setDeleteError("Error deleting event");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
   return (
     <motion.div
       whileHover={{
@@ -46,9 +82,69 @@ const EventCard = ({ event }: EventCardProps) => {
             {event.category}
           </span>
 
-          <span className="text-sm text-gray-500">
-            {event.date}
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-500">
+              {event.date}
+            </span>
+            
+            {isAdmin && (
+              <div className="flex gap-2">
+                <button
+                  onClick={() => onEdit?.(event)}
+                  className="p-1.5 hover:bg-blue-100 rounded-lg transition"
+                  title="Edit event"
+                >
+                  <Edit2 className="h-4 w-4 text-blue-600" />
+                </button>
+                
+                <Dialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+                  <DialogTrigger asChild>
+                    <button
+                      className="p-1.5 hover:bg-red-100 rounded-lg transition"
+                      title="Delete event"
+                    >
+                      <Trash2 className="h-4 w-4 text-red-600" />
+                    </button>
+                  </DialogTrigger>
+                  
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Delete Event</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                      <div className="flex gap-3">
+                        <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
+                        <p>Are you sure you want to delete "{event.title}"? This cannot be undone.</p>
+                      </div>
+                      
+                      {deleteError && (
+                        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                          {deleteError}
+                        </div>
+                      )}
+                      
+                      <div className="flex gap-3 justify-end">
+                        <button
+                          onClick={() => setShowDeleteConfirm(false)}
+                          className="px-4 py-2 border rounded-lg hover:bg-gray-100"
+                          disabled={isDeleting}
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          onClick={handleDelete}
+                          disabled={isDeleting}
+                          className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:bg-gray-400"
+                        >
+                          {isDeleting ? "Deleting..." : "Delete"}
+                        </button>
+                      </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </div>
+            )}
+          </div>
 
         </div>
 

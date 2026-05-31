@@ -1,0 +1,49 @@
+type User @table {
+  displayName: String!
+  email: String!
+  createdAt: Timestamp!
+  photoUrl: String
+  role: String
+}
+
+type Event @table {
+  title: String!
+  description: String!
+  date: Date!
+  startTime: Timestamp!
+  endTime: Timestamp!
+  location: String!
+  createdAt: Timestamp!
+  status: String!
+  imageUrl: String
+  contactEmail: String
+  creator: User
+  club: Club
+}
+
+type Club @table {
+  name: String!
+  description: String!
+  createdAt: Timestamp!
+  contactEmail: String
+  websiteUrl: String
+  socialMediaLink: String
+  creator: User
+}
+
+type Resource @table {
+  name: String!
+  description: String!
+  category: String!
+  createdAt: Timestamp!
+  contactInfo: String
+  websiteUrl: String
+  location: String
+}
+
+type Favorite @table {
+  createdAt: Timestamp!
+  user: User!
+  event: Event
+  club: Club
+}

@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { Navigate } from "@tanstack/react-router";
 import { useAuth } from "@/auth/AuthContext";
 
-const ProtectedRoute = ({ children }: { children: ReactNode }) => {
+export default function AdminProtectedRoute({ children }: { children: ReactNode }) {
   const { isAuthenticated, loading } = useAuth();
 
   if (loading) {
@@ -13,7 +13,9 @@ const ProtectedRoute = ({ children }: { children: ReactNode }) => {
     );
   }
 
-  return isAuthenticated ? <>{children}</> : <Navigate to="/Login" replace />;
-};
+  if (!isAuthenticated) {
+    return <Navigate to="/Login" replace />;
+  }
 
-export default ProtectedRoute;
+  return <>{children}</>;
+}

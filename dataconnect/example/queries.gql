@@ -1,0 +1,61 @@
+query AllClubs @auth(level: PUBLIC, insecureReason: "This operation is safe to expose to the public as it lists public club information.") {
+  clubs {
+    id
+    name
+    description
+    websiteUrl
+    socialMediaLink
+    contactEmail
+    createdAt
+    creator {
+      id
+      displayName
+      email
+    }
+  }
+}
+
+query MyFavoriteEvents @auth(level: USER, insecureReason: "This operation is safe to expose to all logged in users as it retrieves their personal favorite events.") {
+  favorites(where: {userId: {eq_expr: "auth.uid"}, event: {id: {isNull: false}}}) {
+    id
+    event {
+      id
+      title
+      date
+      startTime
+      endTime
+      location
+      club {
+        name
+      }
+    }
+    createdAt
+  }
+}
+
+mutation CreateEvent($title: String!, $description: String!, $date: Date!, $startTime: Timestamp!, $endTime: Timestamp!, $location: String!, $status: String!, $clubId: UUID) @auth(level: USER, insecureReason: "This operation is safe to expose to all logged in users as it allows them to create events.") {
+  event_insert(
+    data: {
+      title: $title
+      description: $description
+      date: $date
+      startTime: $startTime
+      endTime: $endTime
+      location: $location
+      status: $status
+      creatorId_expr: "auth.uid"
+      clubId: $clubId
+      createdAt_expr: "request.time"
+    }
+  )
+}
+
+mutation ToggleFavoriteEvent($eventId: UUID!) @auth(level: USER, insecureReason: "This operation is safe to expose to all logged in users as it allows them to manage their favorite events.") {
+  favorite_upsert(
+    data: {
+      userId_expr: "auth.uid",
+      eventId: $eventId,
+      createdAt_expr: "request.time"
+    }
+  )
+}

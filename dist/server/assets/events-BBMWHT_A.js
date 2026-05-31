@@ -1,0 +1,55 @@
+const events = [
+  {
+    id: 1,
+    title: "Tech Fest 2026",
+    date: "20 May 2026",
+    venue: "Seminar Hall",
+    organizer: "CSE Department",
+    image: "https://images.unsplash.com/photo-1511578314322-379afb476865",
+    category: "Technical",
+    description: "Annual technical festival featuring coding competitions, robotics, and innovation showcases."
+  },
+  {
+    id: 2,
+    title: "Cultural Day",
+    date: "12 April 2026",
+    venue: "College Auditorium",
+    organizer: "Student Council",
+    image: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30",
+    category: "Cultural",
+    description: "Music, dance, drama, and celebration of college cultural activities."
+  },
+  {
+    id: 3,
+    title: "Sports Meet",
+    date: "5 March 2026",
+    venue: "College Ground",
+    organizer: "Sports Committee",
+    image: "https://images.unsplash.com/photo-1517649763962-0c623066013b",
+    category: "Sports",
+    description: "Inter-department sports competitions including cricket, volleyball, and athletics."
+  },
+  {
+    id: 4,
+    title: "Sports Meet",
+    date: "5 March 2026",
+    venue: "College Ground",
+    organizer: "Sports Committee",
+    image: "https://images.unsplash.com/photo-1517649763962-0c623066013b",
+    category: "Sports",
+    description: "Inter-department sports competitions including cricket, volleyball, and athletics."
+  },
+  {
+    id: 5,
+    title: "Sports Meet",
+    date: "5 March 2026",
+    venue: "College Ground",
+    organizer: "Sports Committee",
+    image: "https://images.unsplash.com/photo-1517649763962-0c623066013b",
+    category: "Sports",
+    description: "Inter-department sports competitions including cricket, volleyball, and athletics."
+  }
+];
+export {
+  events as e
+};
