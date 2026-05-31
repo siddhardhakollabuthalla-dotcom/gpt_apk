@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useSearch } from "@tanstack/react-router";
+import { useNavigate, useSearch, Navigate } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 
 import { useAuth } from "@/auth/AuthContext";
 import { eventsService } from "@/services/eventService";
-import { EventType, events as defaultEvents } from "@/data/events";
+import { uploadMultipleImagesRobust, uploadSingleImageRobust } from "@/services/imageKitService";
+import PublicHeader from "@/components/ui/PublicHeader";
 
 const EditEvent = () => {
   const navigate = useNavigate();
@@ -12,34 +13,40 @@ const EditEvent = () => {
   const search = useSearch({ from: "/EditEvent" }) as { eventId?: string | number };
 
   const [loading, setLoading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [error, setError] = useState("");
+  const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
+  const [galleryFiles, setGalleryFiles] = useState<File[]>([]);
   const [formData, setFormData] = useState({
     title: "",
     date: "",
-    venue: "",
-    organizer: "",
-    image: "",
+    location: "",
+    coverImage: "",
+    galleryImages: [] as string[],
     category: "Technical",
     description: "",
   });
 
   // Load event data on mount
   useEffect(() => {
-    if (search.eventId) {
-      // Find event from local data (in a real app, fetch from Firestore)
-      const event = defaultEvents.find((e) => e.id === search.eventId);
+    const loadEvent = async () => {
+      if (!search.eventId) return;
+
+      const event = await eventsService.getEventById(String(search.eventId));
       if (event) {
         setFormData({
           title: event.title,
           date: event.date,
-          venue: event.venue,
-          organizer: event.organizer,
-          image: event.image,
+          location: event.location,
+          coverImage: event.coverImage,
+          galleryImages: event.galleryImages ?? [],
           category: event.category,
           description: event.description,
         });
       }
-    }
+    };
+
+    loadEvent();
   }, [search.eventId]);
 
   // Redirect if not logged in
@@ -52,8 +59,7 @@ const EditEvent = () => {
   }
 
   if (!isAuthenticated) {
-    navigate({ to: "/Login" });
-    return null;
+    return <Navigate to="/Login" replace />;
   }
 
   const handleChange = (
@@ -76,9 +82,8 @@ const EditEvent = () => {
       if (
         !formData.title ||
         !formData.date ||
-        !formData.venue ||
-        !formData.organizer ||
-        !formData.image ||
+        !formData.location ||
+        (!formData.coverImage && !coverImageFile) ||
         !formData.description
       ) {
         setError("Please fill in all fields");
@@ -87,7 +92,22 @@ const EditEvent = () => {
       }
 
       if (search.eventId) {
-        const success = await eventsService.updateEvent(String(search.eventId), formData);
+        const coverImage = coverImageFile
+          ? await uploadSingleImageRobust(coverImageFile, setUploadProgress)
+          : formData.coverImage;
+        const galleryImages = galleryFiles.length
+          ? await uploadMultipleImagesRobust(galleryFiles, setUploadProgress)
+          : formData.galleryImages;
+
+        const success = await eventsService.updateEvent(String(search.eventId), {
+          title: formData.title,
+          date: formData.date,
+          location: formData.location,
+          coverImage,
+          galleryImages,
+          category: formData.category,
+          description: formData.description,
+        });
 
         if (success) {
           navigate({ to: "/" });
@@ -103,10 +123,12 @@ const EditEvent = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4">
-      <div className="max-w-2xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      <PublicHeader active="Events" />
+      <div className="flex-1 py-12 px-4">
+        <div className="max-w-2xl mx-auto">
+          {/* Header */}
+          <div className="mb-8">
           <button
             onClick={() => navigate({ to: "/" })}
             className="flex items-center gap-2 text-blue-600 hover:text-blue-700 mb-4"
@@ -157,27 +179,13 @@ const EditEvent = () => {
 
           {/* Venue */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Venue *</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Location *</label>
             <input
               type="text"
-              name="venue"
-              value={formData.venue}
+              name="location"
+              value={formData.location}
               onChange={handleChange}
               placeholder="e.g., Seminar Hall"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
-
-          {/* Organizer */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Organizer *</label>
-            <input
-              type="text"
-              name="organizer"
-              value={formData.organizer}
-              onChange={handleChange}
-              placeholder="e.g., CSE Department"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
@@ -198,29 +206,43 @@ const EditEvent = () => {
             </select>
           </div>
 
-          {/* Image URL */}
+          {/* Cover Image */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Image URL *</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Cover Image *</label>
             <input
-              type="url"
-              name="image"
-              value={formData.image}
-              onChange={handleChange}
-              placeholder="https://images.unsplash.com/..."
+              type="file"
+              accept="image/*"
+              onChange={(event) => setCoverImageFile(event.target.files?.[0] ?? null)}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
             />
-            {formData.image && (
+            {(coverImageFile || formData.coverImage) && (
               <div className="mt-2">
                 <img
-                  src={formData.image}
+                  src={coverImageFile ? URL.createObjectURL(coverImageFile) : formData.coverImage}
                   alt="Preview"
                   className="h-32 w-full object-cover rounded-lg"
-                  onError={() => setError("Failed to load image. Please check the URL.")}
                 />
               </div>
             )}
           </div>
+
+          {/* Gallery Images */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Replace Gallery Images
+            </label>
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={(event) => setGalleryFiles(Array.from(event.target.files ?? []))}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          {loading && uploadProgress > 0 && (
+            <div className="text-sm text-gray-600">Uploading images: {uploadProgress}%</div>
+          )}
 
           {/* Description */}
           <div>
@@ -255,6 +277,7 @@ const EditEvent = () => {
           </div>
         </form>
       </div>
+     </div>
     </div>
   );
 };

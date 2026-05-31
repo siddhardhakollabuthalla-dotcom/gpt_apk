@@ -1,24 +1,26 @@
 import { useState } from "react";
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, Navigate } from "@tanstack/react-router";
 import { createFileRoute } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 
 import { useAuth } from "@/auth/AuthContext";
 import { eventsService } from "@/services/eventService";
-import { EventType } from "@/data/events";
+import { uploadMultipleImagesRobust, uploadSingleImageRobust } from "@/services/imageKitService";
+import PublicHeader from "@/components/ui/PublicHeader";
 
 const AddEvent = () => {
   const navigate = useNavigate();
   const { isAuthenticated, loading: authLoading } = useAuth();
 
   const [loading, setLoading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [error, setError] = useState("");
+  const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
+  const [galleryFiles, setGalleryFiles] = useState<File[]>([]);
   const [formData, setFormData] = useState({
     title: "",
     date: "",
-    venue: "",
-    organizer: "",
-    image: "",
+    location: "",
     category: "Technical",
     description: "",
   });
@@ -33,8 +35,7 @@ const AddEvent = () => {
   }
 
   if (!isAuthenticated) {
-    navigate({ to: "/Login" });
-    return null;
+    return <Navigate to="/Login" replace />;
   }
 
   const handleChange = (
@@ -57,22 +58,26 @@ const AddEvent = () => {
       if (
         !formData.title ||
         !formData.date ||
-        !formData.venue ||
-        !formData.organizer ||
-        !formData.image ||
-        !formData.description
+        !formData.location ||
+        !formData.description ||
+        !coverImageFile
       ) {
         setError("Please fill in all fields");
         setLoading(false);
         return;
       }
 
-      const eventData: Omit<EventType, "id"> = {
+      const coverImageUrl = await uploadSingleImageRobust(coverImageFile, setUploadProgress);
+      const galleryUrls = galleryFiles.length
+        ? await uploadMultipleImagesRobust(galleryFiles, setUploadProgress)
+        : [];
+
+      const eventData = {
         title: formData.title,
         date: formData.date,
-        venue: formData.venue,
-        organizer: formData.organizer,
-        image: formData.image,
+        location: formData.location,
+        coverImage: coverImageUrl,
+        galleryImages: galleryUrls,
         category: formData.category,
         description: formData.description,
       };
@@ -93,10 +98,12 @@ const AddEvent = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4">
-      <div className="max-w-2xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      <PublicHeader active="Events" />
+      <div className="flex-1 py-12 px-4">
+        <div className="max-w-2xl mx-auto">
+          {/* Header */}
+          <div className="mb-8">
           <button
             onClick={() => navigate({ to: "/" })}
             className="flex items-center gap-2 text-blue-600 hover:text-blue-700 mb-4"
@@ -147,27 +154,13 @@ const AddEvent = () => {
 
           {/* Venue */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Venue *</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Location *</label>
             <input
               type="text"
-              name="venue"
-              value={formData.venue}
+              name="location"
+              value={formData.location}
               onChange={handleChange}
               placeholder="e.g., Seminar Hall"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
-
-          {/* Organizer */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Organizer *</label>
-            <input
-              type="text"
-              name="organizer"
-              value={formData.organizer}
-              onChange={handleChange}
-              placeholder="e.g., CSE Department"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
@@ -188,29 +181,42 @@ const AddEvent = () => {
             </select>
           </div>
 
-          {/* Image URL */}
+          {/* Cover Image */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Image URL *</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Cover Image *</label>
             <input
-              type="url"
-              name="image"
-              value={formData.image}
-              onChange={handleChange}
-              placeholder="https://images.unsplash.com/..."
+              type="file"
+              accept="image/*"
+              onChange={(event) => setCoverImageFile(event.target.files?.[0] ?? null)}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
-            {formData.image && (
+            {coverImageFile && (
               <div className="mt-2">
                 <img
-                  src={formData.image}
+                  src={URL.createObjectURL(coverImageFile)}
                   alt="Preview"
                   className="h-32 w-full object-cover rounded-lg"
-                  onError={() => setError("Failed to load image. Please check the URL.")}
                 />
               </div>
             )}
           </div>
+
+          {/* Gallery Images */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Gallery Images</label>
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={(event) => setGalleryFiles(Array.from(event.target.files ?? []))}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          {loading && uploadProgress > 0 && (
+            <div className="text-sm text-gray-600">Uploading images: {uploadProgress}%</div>
+          )}
 
           {/* Description */}
           <div>
@@ -245,21 +251,11 @@ const AddEvent = () => {
           </div>
         </form>
       </div>
+     </div>
     </div>
   );
 };
 
-export const Route = createFileRoute("/AddEvent")({
-  component: AddEvent,
-  head: () => ({
-    meta: [
-      { title: "Add Event — Government Polytechnic, Anakapalli" },
-      {
-        name: "description",
-        content: "Add a new college event announcement",
-      },
-    ],
-  }),
-});
+
 
 export default AddEvent;

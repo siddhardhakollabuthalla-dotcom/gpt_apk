@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useAuth } from "./AuthContext";
+import PublicHeader from "@/components/ui/PublicHeader";
 
 export const LoginPage: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -39,9 +40,11 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <div style={styles.container}>
-      <div style={styles.loginBox}>
-        <h1 style={styles.title}>Admin Login</h1>
+    <div className="min-h-screen flex flex-col">
+      <PublicHeader active="Login" />
+      <div style={{ ...styles.container, minHeight: "calc(100vh - 110px)", flex: 1 }}>
+        <div style={styles.loginBox}>
+          <h1 style={styles.title}>Admin Login</h1>
 
         <form onSubmit={handleSubmit} style={styles.form}>
           {/* Error Message */}
@@ -136,6 +139,7 @@ export const LoginPage: React.FC = () => {
           <p style={styles.demoPassword}>Password: AdminPass123</p>
         </div>
       </div>
+     </div>
 
       <style>{`
         @keyframes spin {

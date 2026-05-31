@@ -1,10 +1,10 @@
 import { useEffect, useState, useCallback } from "react";
 import { Link } from "@tanstack/react-router";
-import { EventType } from "@/data/events";
-import { eventsService } from "@/services/eventService";
+import { EventListItem, eventsService } from "@/services/eventService";
+import PublicHeader from "@/components/ui/PublicHeader";
 
 export default function AdminDashboard() {
-  const [events, setEvents] = useState<(EventType & { id: string })[]>([]);
+  const [events, setEvents] = useState<EventListItem[]>([]);
 
   const loadEvents = useCallback(async () => {
     const data = await eventsService.getAllEvents();
@@ -23,10 +23,11 @@ export default function AdminDashboard() {
   };
 
   return (
-    // ... rest of your JSX
-    <div className="flex min-h-screen">
-      {/* Sidebar */}
-      <aside className="w-64 bg-slate-900 text-white p-5">
+    <div className="min-h-screen bg-gray-100 flex flex-col">
+      <PublicHeader active="" />
+      <div className="flex flex-1">
+        {/* Sidebar */}
+        <aside className="w-64 bg-slate-900 text-white p-5">
         <h2 className="text-2xl font-bold mb-8">Admin Panel</h2>
 
         <nav className="space-y-4">
@@ -112,6 +113,7 @@ export default function AdminDashboard() {
           </table>
         </div>
       </main>
+     </div>
     </div>
   );
 }

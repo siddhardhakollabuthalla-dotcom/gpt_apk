@@ -1,29 +1,23 @@
 import { useState, useEffect } from "react";
-import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { Plus, Phone, Mail } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
 
 import EventCard, { EventCardEvent } from "@/components/ui/events/EventCard";
 import { events as defaultEvents } from "@/data/events";
 import { useAuth } from "@/auth/AuthContext";
 import { eventsService } from "@/services/eventService";
-
-const nav = [
-  { label: "Home", href: "/" },
-  { label: "About", href: "#about" },
-  { label: "Departments", href: "#departments" },
-  { label: "Faculty", href: "#faculty" },
-  { label: "Events", href: "/Events" },
-  { label: "Login", href: "/Login" },
-  { label: "Careers", href: "#careers" },
-  { label: "Notices", href: "#notices" },
-  { label: "Gallery", href: "#gallery" },
-  { label: "Contact", href: "#contact" },
-];
+import PublicHeader from "@/components/ui/PublicHeader";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { uploadMultipleImagesRobust } from "@/services/imageKitService";
 
 const categories = ["All", "Technical", "Cultural", "Sports"];
-const galleryImages = [
+const staticGalleryImages = [
   "https://images.unsplash.com/photo-1492684223066-81342ee5ff30",
   "https://images.unsplash.com/photo-1511578314322-379afb476865",
   "https://images.unsplash.com/photo-1505373877841-8d25f7d46678",
@@ -39,8 +33,17 @@ function Events() {
   const { isAuthenticated } = useAuth();
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const [eventsList, setEventsList] = useState(defaultEvents);
+  const [eventsList, setEventsList] = useState<EventCardEvent[]>([]);
   const [loading, setLoading] = useState(false);
+  const [allGalleryImages, setAllGalleryImages] = useState<string[]>(staticGalleryImages);
+
+  // Upload dialog states
+  const [isUploadOpen, setIsUploadOpen] = useState(false);
+  const [selectedEventId, setSelectedEventId] = useState<string>("");
+  const [uploadFiles, setUploadFiles] = useState<File[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadError, setUploadError] = useState("");
 
   // Load events from Firestore on mount
   useEffect(() => {
@@ -51,30 +54,51 @@ function Events() {
     setLoading(true);
     try {
       const firestoreEvents = await eventsService.getAllEvents();
-      if (firestoreEvents.length > 0) {
-        // Map Firestore events to include id as a property
-        setEventsList(
-          firestoreEvents.map((event) => ({
-            ...event,
-            id: event.id || Math.random(),
-          })),
-        );
-      }
+      
+      const mappedEvents: EventCardEvent[] = firestoreEvents.map((event) => ({
+        id: event.id,
+        title: event.title,
+        date: event.date,
+        venue: event.location || event.venue,
+        organizer: event.organizer || "College",
+        image: event.coverImage || event.image,
+        category: event.category,
+        description: event.description,
+        galleryImages: event.galleryImages || [],
+      }));
+
+      const finalEvents = mappedEvents.length > 0 ? mappedEvents : defaultEvents.map(e => ({
+        ...e,
+        galleryImages: []
+      }));
+      
+      setEventsList(finalEvents);
+
+      // Collect gallery images
+      const eventPhotos: string[] = [];
+      firestoreEvents.forEach((ev) => {
+        if (ev.galleryImages && Array.isArray(ev.galleryImages)) {
+          eventPhotos.push(...ev.galleryImages);
+        }
+      });
+      
+      // Merge with static default images
+      setAllGalleryImages([...eventPhotos, ...staticGalleryImages]);
     } catch (error) {
       console.error("Failed to load events:", error);
-      // Fall back to default events
-      setEventsList(defaultEvents);
+      setEventsList(defaultEvents.map(e => ({ ...e, galleryImages: [] })));
+      setAllGalleryImages(staticGalleryImages);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDeleteEvent = (eventId: string | number) => {
+  const handleDeleteEvent = async (eventId: string | number) => {
     setEventsList((prev) => prev.filter((event) => event.id !== eventId));
+    await loadEvents();
   };
 
   const handleEditEvent = (event: EventCardEvent) => {
-    // Pass event to edit page or modal
     navigate({
       to: "/EditEvent",
       search: { eventId: event.id },
@@ -85,72 +109,64 @@ function Events() {
     navigate({ to: "/AddEvent" });
   };
 
+  const handleUploadGallery = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedEventId) {
+      setUploadError("Please select an event.");
+      return;
+    }
+    if (uploadFiles.length === 0) {
+      setUploadError("Please choose one or more files to upload.");
+      return;
+    }
+
+    setIsUploading(true);
+    setUploadError("");
+    setUploadProgress(10);
+
+    try {
+      const urls = await uploadMultipleImagesRobust(uploadFiles, (progress) => {
+        setUploadProgress(progress);
+      });
+
+      const event = await eventsService.getEventById(selectedEventId);
+      if (!event) {
+        throw new Error("Selected event not found");
+      }
+
+      const existingGallery = event.galleryImages || [];
+      const updatedGallery = [...existingGallery, ...urls];
+
+      const success = await eventsService.updateEvent(selectedEventId, {
+        galleryImages: updatedGallery,
+      });
+
+      if (success) {
+        setIsUploadOpen(false);
+        setSelectedEventId("");
+        setUploadFiles([]);
+        setUploadProgress(0);
+        await loadEvents();
+      } else {
+        setUploadError("Failed to update event gallery.");
+      }
+    } catch (err) {
+      console.error(err);
+      setUploadError(err instanceof Error ? err.message : "Error uploading gallery photos");
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   const filteredEvents = eventsList.filter((event) => {
     const matchesSearch = event.title.toLowerCase().includes(search.toLowerCase());
-
     const matchesCategory = selectedCategory === "All" || event.category === selectedCategory;
-
     return matchesSearch && matchesCategory;
   });
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Top strip */}
-      <div className="bg-navy text-navy-foreground text-xs">
-        <div className="mx-auto max-w-7xl px-4 py-2 flex flex-wrap items-center justify-between gap-2">
-          <span className="opacity-90">
-            Government of Andhra Pradesh · State Board of Technical Education &amp; Training
-          </span>
-          <div className="flex items-center gap-5 opacity-90">
-            <span className="inline-flex items-center gap-1.5">
-              <Phone className="h-3 w-3" /> +91 90102 22173
-            </span>
-            <span className="hidden sm:inline-flex items-center gap-1.5">
-              <Mail className="h-3 w-3" /> polytechnic.government173@gmail.com
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* Nav */}
-      <header className="sticky top-0 z-40 bg-background/85 backdrop-blur border-b border-border">
-        <div className="mx-auto max-w-7xl px-4 h-16 flex items-center justify-between">
-          <a href="#home" className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-full bg-navy text-gold grid place-items-center font-display font-bold">
-              GP
-            </div>
-            <div className="leading-tight">
-              <div className="font-display font-semibold text-foreground">
-                Government Polytechnic, Anakapalli
-              </div>
-              <div className="text-[11px] text-muted-foreground">
-                Knowledge is Power · Estd. 2008
-              </div>
-            </div>
-          </a>
-          <nav className="hidden lg:flex items-center gap-7 text-sm">
-            {nav.map((n, i) => (
-              <a
-                key={n.label}
-                href={n.href}
-                className={`relative text-foreground/80 hover:text-foreground transition-colors ${
-                  i === 0
-                    ? "text-foreground after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-6 after:bg-gold"
-                    : ""
-                }`}
-              >
-                {n.label}
-              </a>
-            ))}
-          </nav>
-          <a
-            href="#contact"
-            className="hidden sm:inline-flex items-center gap-2 rounded-lg bg-navy text-navy-foreground px-4 py-2 text-sm font-medium hover:opacity-90 transition"
-          >
-            Contact Us
-          </a>
-        </div>
-      </header>
+      <PublicHeader active="Events" />
 
       <div className="min-h-screen bg-gradient-to-b from-white to-slate-100 dark:from-black dark:to-zinc-900">
         {/* HERO */}
@@ -158,6 +174,7 @@ function Events() {
           <img
             src="https://images.unsplash.com/photo-1523580494863-6f3031224c94"
             className="absolute inset-0 w-full h-full object-cover"
+            alt="Hero background"
           />
 
           <div className="absolute inset-0 bg-black/60" />
@@ -204,7 +221,7 @@ function Events() {
               {isAuthenticated && (
                 <button
                   onClick={handleAddEvent}
-                  className="ml-3 flex items-center gap-2 px-5 py-2 rounded-xl bg-green-600 text-white hover:bg-green-700 transition font-medium"
+                  className="ml-3 flex items-center gap-2 px-5 py-2 rounded-xl bg-green-600 text-white hover:bg-green-700 transition font-medium cursor-pointer"
                 >
                   <Plus className="h-4 w-4" />
                   Add Event
@@ -250,43 +267,128 @@ function Events() {
                 Memories from our college events and celebrations.
               </p>
             </div>
+            {isAuthenticated && (
+              <button
+                onClick={() => setIsUploadOpen(true)}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white transition font-medium shadow-md cursor-pointer"
+              >
+                <Plus className="h-4 w-4" />
+                Add Event Photos
+              </button>
+            )}
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5">
-            {galleryImages.map((image, index) => (
+            {allGalleryImages.map((image, index) => (
               <motion.div
                 key={index}
                 whileHover={{
                   scale: 1.03,
                 }}
-                className="overflow-hidden rounded-3xl shadow-xl"
+                className="overflow-hidden rounded-3xl shadow-xl aspect-[4/3] cursor-pointer"
+                onClick={() => window.open(image, "_blank")}
               >
                 <img
                   src={image}
                   alt={`Gallery ${index}`}
-                  className="w-full h-64 object-cover hover:scale-110 transition duration-500"
+                  className="w-full h-full object-cover hover:scale-110 transition duration-500"
                 />
               </motion.div>
             ))}
           </div>
         </section>
       </div>
+
+      {/* Upload Gallery Images Dialog */}
+      <Dialog open={isUploadOpen} onOpenChange={setIsUploadOpen}>
+        <DialogContent className="max-w-md rounded-3xl p-6 bg-white dark:bg-zinc-900 border dark:border-zinc-800 shadow-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold">Add Photos to Event</DialogTitle>
+          </DialogHeader>
+
+          <form onSubmit={handleUploadGallery} className="mt-4 space-y-4">
+            {uploadError && (
+              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2.5 rounded-xl text-sm">
+                {uploadError}
+              </div>
+            )}
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
+                Select Event *
+              </label>
+              <select
+                value={selectedEventId}
+                onChange={(e) => setSelectedEventId(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 dark:border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-zinc-800 text-foreground"
+                required
+              >
+                <option value="">-- Choose an Event --</option>
+                {eventsList
+                  .filter((event) => event.id !== undefined)
+                  .map((event) => (
+                    <option key={event.id} value={event.id}>
+                      {event.title} ({event.date})
+                    </option>
+                  ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
+                Choose Photos *
+              </label>
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={(e) => setUploadFiles(Array.from(e.target.files || []))}
+                className="w-full px-4 py-2 border border-gray-300 dark:border-zinc-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-zinc-800 text-foreground"
+                required
+              />
+            </div>
+
+            {isUploading && (
+              <div className="space-y-1.5">
+                <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
+                  <span>Uploading photos...</span>
+                  <span>{uploadProgress}%</span>
+                </div>
+                <div className="w-full bg-gray-200 dark:bg-zinc-700 rounded-full h-2">
+                  <div
+                    className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                    style={{ width: `${uploadProgress}%` }}
+                  />
+                </div>
+              </div>
+            )}
+
+            <div className="flex gap-3 justify-end pt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsUploadOpen(false);
+                  setUploadFiles([]);
+                  setUploadError("");
+                }}
+                disabled={isUploading}
+                className="px-4 py-2 border border-gray-300 rounded-xl hover:bg-gray-100 dark:hover:bg-zinc-800 disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={isUploading}
+                className="px-5 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-xl font-semibold transition"
+              >
+                {isUploading ? "Uploading..." : "Upload"}
+              </button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
-
-export const Route = createFileRoute("/")({
-  component: Events,
-  head: () => ({
-    meta: [
-      { title: "Government Polytechnic, Anakapalli — SBTET Diploma in CME & ECE" },
-      {
-        name: "description",
-        content:
-          "Government Polytechnic, Anakapalli — SBTET-recognized diploma programs in Computer Engineering and Electronics & Communication on a 9.74-acre campus.",
-      },
-    ],
-  }),
-});
 
 export default Events;

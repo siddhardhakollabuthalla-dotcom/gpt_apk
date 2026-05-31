@@ -30,6 +30,7 @@ import galWorkshop from "@/assets/gallery-workshop.jpg";
 import galLibrary from "@/assets/gallery-library.jpg";
 import galEvent from "@/assets/gallery-event.jpg";
 import galCampus from "@/assets/gallery-campus.jpg";
+import PublicHeader from "@/components/ui/PublicHeader";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -128,58 +129,7 @@ const gallery = [
 function Index() {
   return (
     <div className="min-h-screen bg-background">
-      {/* Top strip */}
-      <div className="bg-navy text-navy-foreground text-xs">
-        <div className="mx-auto max-w-7xl px-4 py-2 flex flex-wrap items-center justify-between gap-2">
-          <span className="opacity-90">
-            Government of Andhra Pradesh · State Board of Technical Education &amp; Training
-          </span>
-          <div className="flex items-center gap-5 opacity-90">
-            <span className="inline-flex items-center gap-1.5">
-              <Phone className="h-3 w-3" /> +91 90102 22173
-            </span>
-            <span className="hidden sm:inline-flex items-center gap-1.5">
-              <Mail className="h-3 w-3" /> polytechnic.government173@gmail.com
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* Nav */}
-      <header className="sticky top-0 z-40 bg-background/85 backdrop-blur border-b border-border">
-        <div className="mx-auto max-w-7xl px-4 h-16 flex items-center justify-between">
-          <a href="#home" className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-full bg-navy text-gold grid place-items-center font-display font-bold">
-              GP
-            </div>
-            <div className="leading-tight">
-              <div className="font-display font-semibold text-foreground">
-                Government Polytechnic, Anakapalli
-              </div>
-              <div className="text-[11px] text-muted-foreground">
-                Knowledge is Power · Estd. 2008
-              </div>
-            </div>
-          </a>
-          <nav className="hidden lg:flex items-center gap-7 text-sm">
-            {nav.map((n, i) => (
-              <a
-                key={n.label}
-                href={n.href}
-                className={`relative text-foreground/80 hover:text-foreground transition-colors ${i === 0 ? "text-foreground after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-6 after:bg-gold" : ""}`}
-              >
-                {n.label}
-              </a>
-            ))}
-          </nav>
-          <a
-            href="#contact"
-            className="hidden sm:inline-flex items-center gap-2 rounded-lg bg-navy text-navy-foreground px-4 py-2 text-sm font-medium hover:opacity-90 transition"
-          >
-            Contact Us
-          </a>
-        </div>
-      </header>
+      <PublicHeader active="Home" />
 
       {/* Hero */}
       <section id="home" className="relative isolate overflow-hidden">

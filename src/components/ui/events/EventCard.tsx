@@ -21,6 +21,7 @@ export interface EventCardEvent {
   image: string;
   category: string;
   description: string;
+  galleryImages?: string[];
 }
 
 interface EventCardProps {
@@ -199,6 +200,24 @@ const EventCard = ({ event, onDelete, onEdit }: EventCardProps) => {
 
                 <p className="text-gray-500 leading-7">{event.description}</p>
               </div>
+
+              {event.galleryImages && event.galleryImages.length > 0 && (
+                <div className="bg-slate-100 dark:bg-zinc-800 p-4 rounded-2xl">
+                  <h3 className="font-semibold mb-3">Event Gallery</h3>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    {event.galleryImages.map((img, i) => (
+                      <div key={i} className="overflow-hidden rounded-xl aspect-[4/3] shadow-md border dark:border-zinc-700">
+                        <img 
+                          src={img} 
+                          alt={`Gallery ${i}`} 
+                          className="w-full h-full object-cover hover:scale-105 transition duration-300 cursor-pointer" 
+                          onClick={() => window.open(img, "_blank")}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </DialogContent>
         </Dialog>
