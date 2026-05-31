@@ -1,9 +1,10 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
+import { getAnalytics } from "firebase/analytics";
+
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -17,12 +18,18 @@ const firebaseConfig = {
   storageBucket: "gpt-akp.firebasestorage.app",
   messagingSenderId: "168701365746",
   appId: "1:168701365746:web:67f76312b99dfe09992f6b",
-  measurementId: "G-HXDT4NQ325"
+  measurementId: "G-HXDT4NQ325",
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+let analytics;
+
+if (typeof window !== "undefined") {
+  analytics = getAnalytics(app);
+}
+
+export { analytics };
 
 export const auth = getAuth(app);
 export const db = getFirestore(app);

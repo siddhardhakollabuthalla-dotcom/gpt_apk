@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 import Events from "@/pages/Events";
-import { isAdminLoggedIn } from "../lib/auth";
 
 export const Route = createFileRoute("/Events")({
   component: Events,
@@ -9,7 +8,8 @@ export const Route = createFileRoute("/Events")({
       { title: "Events — Government Polytechnic, Anakapalli" },
       {
         name: "description",
-        content: "Browse upcoming college events, workshops, celebrations, and notices for Government Polytechnic, Anakapalli.",
+        content:
+          "Browse upcoming college events, workshops, celebrations, and notices for Government Polytechnic, Anakapalli.",
       },
     ],
   }),

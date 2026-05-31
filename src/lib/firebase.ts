@@ -16,7 +16,7 @@ const firebaseConfig = {
   storageBucket: "gpt-akp.firebasestorage.app",
   messagingSenderId: "168701365746",
   appId: "1:168701365746:web:67f76312b99dfe09992f6b",
-  measurementId: "G-HXDT4NQ325"
+  measurementId: "G-HXDT4NQ325",
 };
 
 // Initialize Firebase

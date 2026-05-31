@@ -11,7 +11,7 @@ interface ApiConfig extends RequestInit {
   retryOnTokenRefresh?: boolean;
 }
 
-interface ApiResponse<T = any> {
+interface ApiResponse<T = unknown> {
   success: boolean;
   data?: T;
   error?: string;
@@ -63,7 +63,11 @@ class ApiService {
           throw new Error("Token refresh failed");
         }
 
-        const data = await response.json();
+        const data = (await response.json()) as ApiResponse<{
+          accessToken: string;
+          refreshToken: string;
+          expiresIn: number;
+        }>;
         if (data.success && data.data) {
           const { accessToken, refreshToken: newRefreshToken, expiresIn } = data.data;
           const expiresAt = new Date().getTime() + expiresIn * 1000;
@@ -105,12 +109,12 @@ class ApiService {
         await this.refreshAccessToken();
 
         // Retry the original request with new token
+        const retryHeaders = new Headers(originalRequest.headers);
+        retryHeaders.set("Authorization", `Bearer ${this.getAccessToken()}`);
+
         const retryResponse = await fetch(originalRequest.url, {
           ...originalRequest,
-          headers: {
-            ...originalRequest.headers,
-            Authorization: `Bearer ${this.getAccessToken()}`,
-          },
+          headers: retryHeaders,
         });
 
         if (!retryResponse.ok) {
@@ -120,7 +124,7 @@ class ApiService {
           };
         }
 
-        return await retryResponse.json();
+        return (await retryResponse.json()) as ApiResponse<T>;
       } catch (error) {
         // Token refresh failed, clear auth data and redirect to login
         window.location.href = "/Login";
@@ -132,28 +136,35 @@ class ApiService {
     }
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
+      const errorData = (await response.json().catch(() => ({}))) as {
+        error?: string;
+        message?: string;
+      };
       return {
         success: false,
         error: errorData.error || errorData.message || `Request failed: ${response.statusText}`,
       };
     }
 
-    const data = await response.json();
+    const data = (await response.json()) as ApiResponse<T>;
     return data;
   }
 
   /**
    * Make an authenticated GET request
    */
-  async get<T = any>(url: string, config?: ApiConfig): Promise<ApiResponse<T>> {
+  async get<T = unknown>(url: string, config?: ApiConfig): Promise<ApiResponse<T>> {
     return this.request<T>(url, { ...config, method: "GET" });
   }
 
   /**
    * Make an authenticated POST request
    */
-  async post<T = any>(url: string, body?: any, config?: ApiConfig): Promise<ApiResponse<T>> {
+  async post<T = unknown>(
+    url: string,
+    body?: unknown,
+    config?: ApiConfig,
+  ): Promise<ApiResponse<T>> {
     return this.request<T>(url, {
       ...config,
       method: "POST",
@@ -164,7 +175,7 @@ class ApiService {
   /**
    * Make an authenticated PUT request
    */
-  async put<T = any>(url: string, body?: any, config?: ApiConfig): Promise<ApiResponse<T>> {
+  async put<T = unknown>(url: string, body?: unknown, config?: ApiConfig): Promise<ApiResponse<T>> {
     return this.request<T>(url, {
       ...config,
       method: "PUT",
@@ -175,14 +186,18 @@ class ApiService {
   /**
    * Make an authenticated DELETE request
    */
-  async delete<T = any>(url: string, config?: ApiConfig): Promise<ApiResponse<T>> {
+  async delete<T = unknown>(url: string, config?: ApiConfig): Promise<ApiResponse<T>> {
     return this.request<T>(url, { ...config, method: "DELETE" });
   }
 
   /**
    * Make an authenticated PATCH request
    */
-  async patch<T = any>(url: string, body?: any, config?: ApiConfig): Promise<ApiResponse<T>> {
+  async patch<T = unknown>(
+    url: string,
+    body?: unknown,
+    config?: ApiConfig,
+  ): Promise<ApiResponse<T>> {
     return this.request<T>(url, {
       ...config,
       method: "PATCH",
@@ -193,7 +208,7 @@ class ApiService {
   /**
    * Generic request method with token handling
    */
-  private async request<T = any>(url: string, config: ApiConfig = {}): Promise<ApiResponse<T>> {
+  private async request<T = unknown>(url: string, config: ApiConfig = {}): Promise<ApiResponse<T>> {
     try {
       const { skipAuth = false, headers = {}, ...otherConfig } = config;
 

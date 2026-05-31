@@ -318,7 +318,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     // Check every minute
     const interval = setInterval(checkAndRefresh, 60000);
     return () => clearInterval(interval);
-  }, [isAuthenticated, shouldRefreshToken, refreshToken]);
+  }, [isAuthenticated, user, shouldRefreshToken, refreshToken]);
 
   const value: AuthContextType = {
     isAuthenticated,

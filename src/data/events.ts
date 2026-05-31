@@ -16,8 +16,7 @@ export const events: EventType[] = [
     date: "20 May 2026",
     venue: "Seminar Hall",
     organizer: "CSE Department",
-    image:
-      "https://images.unsplash.com/photo-1511578314322-379afb476865",
+    image: "https://images.unsplash.com/photo-1511578314322-379afb476865",
     category: "Technical",
     description:
       "Annual technical festival featuring coding competitions, robotics, and innovation showcases.",
@@ -29,11 +28,9 @@ export const events: EventType[] = [
     date: "12 April 2026",
     venue: "College Auditorium",
     organizer: "Student Council",
-    image:
-      "https://images.unsplash.com/photo-1492684223066-81342ee5ff30",
+    image: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30",
     category: "Cultural",
-    description:
-      "Music, dance, drama, and celebration of college cultural activities.",
+    description: "Music, dance, drama, and celebration of college cultural activities.",
   },
 
   {
@@ -42,8 +39,7 @@ export const events: EventType[] = [
     date: "5 March 2026",
     venue: "College Ground",
     organizer: "Sports Committee",
-    image:
-      "https://images.unsplash.com/photo-1517649763962-0c623066013b",
+    image: "https://images.unsplash.com/photo-1517649763962-0c623066013b",
     category: "Sports",
     description:
       "Inter-department sports competitions including cricket, volleyball, and athletics.",
@@ -54,8 +50,7 @@ export const events: EventType[] = [
     date: "5 March 2026",
     venue: "College Ground",
     organizer: "Sports Committee",
-    image:
-      "https://images.unsplash.com/photo-1517649763962-0c623066013b",
+    image: "https://images.unsplash.com/photo-1517649763962-0c623066013b",
     category: "Sports",
     description:
       "Inter-department sports competitions including cricket, volleyball, and athletics.",
@@ -66,8 +61,7 @@ export const events: EventType[] = [
     date: "5 March 2026",
     venue: "College Ground",
     organizer: "Sports Committee",
-    image:
-      "https://images.unsplash.com/photo-1517649763962-0c623066013b",
+    image: "https://images.unsplash.com/photo-1517649763962-0c623066013b",
     category: "Sports",
     description:
       "Inter-department sports competitions including cricket, volleyball, and athletics.",

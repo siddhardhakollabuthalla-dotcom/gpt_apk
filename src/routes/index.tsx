@@ -22,11 +22,6 @@ import {
   FileText,
   ChevronRight,
 } from "lucide-react";
-import {
-  isAdminLoggedIn,
-  logoutAdmin,
-} from "@/lib/auth";
-
 import heroCampus from "@/assets/hero-campus.jpg";
 import principalImg from "@/assets/principal.jpg";
 import galLab from "@/assets/gallery-lab.jpg";
@@ -49,9 +44,8 @@ export const Route = createFileRoute("/")({
     ],
   }),
 });
-const admin = isAdminLoggedIn();
 const nav = [
-  { label: "Home", href: "#home" },
+  { label: "Home", href: "/" },
   { label: "About", href: "#about" },
   { label: "Departments", href: "#departments" },
   { label: "Faculty", href: "#faculty" },
@@ -62,7 +56,6 @@ const nav = [
   { label: "Gallery", href: "#gallery" },
   { label: "Contact", href: "#contact" },
 ];
-
 
 const quickAccess = [
   { title: "Departments", sub: "CME & ECE", icon: GraduationCap, href: "#departments" },
@@ -77,10 +70,26 @@ const quickAccess = [
 ];
 
 const whyUs = [
-  { title: "Government recognized", sub: "AICTE & SBTET Andhra Pradesh approved", icon: ShieldCheck },
-  { title: "Affordable education", sub: "Subsidized fees with full scholarship support", icon: Award },
-  { title: "Industry-ready labs", sub: "150+ computers, CISCO routing & switching setup", icon: Cpu },
-  { title: "Safe & modern campus", sub: "CCTV, AEBAS biometric, RO/UV drinking water", icon: Building2 },
+  {
+    title: "Government recognized",
+    sub: "AICTE & SBTET Andhra Pradesh approved",
+    icon: ShieldCheck,
+  },
+  {
+    title: "Affordable education",
+    sub: "Subsidized fees with full scholarship support",
+    icon: Award,
+  },
+  {
+    title: "Industry-ready labs",
+    sub: "150+ computers, CISCO routing & switching setup",
+    icon: Cpu,
+  },
+  {
+    title: "Safe & modern campus",
+    sub: "CCTV, AEBAS biometric, RO/UV drinking water",
+    icon: Building2,
+  },
 ];
 
 const facilities = [
@@ -98,7 +107,11 @@ const facilities = [
 
 const notices = [
   { date: "12 May 2026", tag: "Examination", title: "III Semester end-exam timetable announced" },
-  { date: "08 May 2026", tag: "Placements", title: "TCS recruitment drive on 22 May — register now" },
+  {
+    date: "08 May 2026",
+    tag: "Placements",
+    title: "TCS recruitment drive on 22 May — register now",
+  },
   { date: "02 May 2026", tag: "Academics", title: "Industrial visit schedule for CME & ECE" },
   { date: "28 Apr 2026", tag: "Scholarships", title: "Post-matric scholarship renewal forms open" },
 ];
@@ -122,8 +135,12 @@ function Index() {
             Government of Andhra Pradesh · State Board of Technical Education &amp; Training
           </span>
           <div className="flex items-center gap-5 opacity-90">
-            <span className="inline-flex items-center gap-1.5"><Phone className="h-3 w-3" /> +91 90102 22173</span>
-            <span className="hidden sm:inline-flex items-center gap-1.5"><Mail className="h-3 w-3" /> polytechnic.government173@gmail.com</span>
+            <span className="inline-flex items-center gap-1.5">
+              <Phone className="h-3 w-3" /> +91 90102 22173
+            </span>
+            <span className="hidden sm:inline-flex items-center gap-1.5">
+              <Mail className="h-3 w-3" /> polytechnic.government173@gmail.com
+            </span>
           </div>
         </div>
       </div>
@@ -132,10 +149,16 @@ function Index() {
       <header className="sticky top-0 z-40 bg-background/85 backdrop-blur border-b border-border">
         <div className="mx-auto max-w-7xl px-4 h-16 flex items-center justify-between">
           <a href="#home" className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-full bg-navy text-gold grid place-items-center font-display font-bold">GP</div>
+            <div className="h-10 w-10 rounded-full bg-navy text-gold grid place-items-center font-display font-bold">
+              GP
+            </div>
             <div className="leading-tight">
-              <div className="font-display font-semibold text-foreground">Government Polytechnic, Anakapalli</div>
-              <div className="text-[11px] text-muted-foreground">Knowledge is Power · Estd. 2008</div>
+              <div className="font-display font-semibold text-foreground">
+                Government Polytechnic, Anakapalli
+              </div>
+              <div className="text-[11px] text-muted-foreground">
+                Knowledge is Power · Estd. 2008
+              </div>
             </div>
           </a>
           <nav className="hidden lg:flex items-center gap-7 text-sm">
@@ -149,7 +172,10 @@ function Index() {
               </a>
             ))}
           </nav>
-          <a href="#contact" className="hidden sm:inline-flex items-center gap-2 rounded-lg bg-navy text-navy-foreground px-4 py-2 text-sm font-medium hover:opacity-90 transition">
+          <a
+            href="#contact"
+            className="hidden sm:inline-flex items-center gap-2 rounded-lg bg-navy text-navy-foreground px-4 py-2 text-sm font-medium hover:opacity-90 transition"
+          >
             Contact Us
           </a>
         </div>
@@ -179,10 +205,16 @@ function Index() {
             village with modern laboratories, 100 Mbps networked classrooms and dedicated faculty.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <a href="#departments" className="inline-flex items-center gap-2 rounded-xl bg-gold text-gold-foreground px-5 py-3 font-medium hover:brightness-105 transition shadow-lg shadow-black/20">
+            <a
+              href="#departments"
+              className="inline-flex items-center gap-2 rounded-xl bg-gold text-gold-foreground px-5 py-3 font-medium hover:brightness-105 transition shadow-lg shadow-black/20"
+            >
               Explore Departments <ArrowRight className="h-4 w-4" />
             </a>
-            <a href="#about" className="inline-flex items-center gap-2 rounded-xl border border-white/30 bg-white/5 backdrop-blur px-5 py-3 font-medium text-white hover:bg-white/10 transition">
+            <a
+              href="#about"
+              className="inline-flex items-center gap-2 rounded-xl border border-white/30 bg-white/5 backdrop-blur px-5 py-3 font-medium text-white hover:bg-white/10 transition"
+            >
               About the Institution
             </a>
           </div>
@@ -275,7 +307,8 @@ function Index() {
           <Eyebrow>Academics</Eyebrow>
           <SectionTitle>Two diploma programs. One commitment to excellence.</SectionTitle>
           <p className="mt-3 text-muted-foreground max-w-2xl">
-            Three-year SBTET-approved diploma courses with strong fundamentals and hands-on training.
+            Three-year SBTET-approved diploma courses with strong fundamentals and hands-on
+            training.
           </p>
           <div className="mt-10 grid md:grid-cols-2 gap-6">
             {[
@@ -290,13 +323,21 @@ function Index() {
                 desc: "Analog & digital electronics, embedded systems, communication and VLSI fundamentals.",
               },
             ].map((d) => (
-              <article key={d.code} className="group relative overflow-hidden rounded-3xl border border-border bg-card p-8 hover:shadow-xl transition">
+              <article
+                key={d.code}
+                className="group relative overflow-hidden rounded-3xl border border-border bg-card p-8 hover:shadow-xl transition"
+              >
                 <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-gold/10 group-hover:bg-gold/20 transition" />
                 <div className="relative">
-                  <span className="inline-block rounded-md bg-navy text-navy-foreground px-2.5 py-1 text-xs font-semibold tracking-wide">{d.code}</span>
+                  <span className="inline-block rounded-md bg-navy text-navy-foreground px-2.5 py-1 text-xs font-semibold tracking-wide">
+                    {d.code}
+                  </span>
                   <h3 className="mt-4 text-2xl font-bold text-foreground">{d.title}</h3>
                   <p className="mt-3 text-muted-foreground leading-relaxed">{d.desc}</p>
-                  <a href="#" className="mt-6 inline-flex items-center gap-1.5 text-navy font-medium group-hover:text-gold-foreground">
+                  <a
+                    href="#"
+                    className="mt-6 inline-flex items-center gap-1.5 text-navy font-medium group-hover:text-gold-foreground"
+                  >
                     Explore department <ChevronRight className="h-4 w-4" />
                   </a>
                 </div>
@@ -319,7 +360,10 @@ function Index() {
               AMIE — while interested students are supported by the placement cell for industry
               roles and apprenticeships.
             </p>
-            <a href="#" className="mt-8 inline-flex items-center gap-2 rounded-xl bg-gold text-gold-foreground px-5 py-3 font-medium hover:brightness-105 transition">
+            <a
+              href="#"
+              className="mt-8 inline-flex items-center gap-2 rounded-xl bg-gold text-gold-foreground px-5 py-3 font-medium hover:brightness-105 transition"
+            >
               Explore career pathways <ArrowRight className="h-4 w-4" />
             </a>
           </div>
@@ -330,7 +374,10 @@ function Index() {
               ["Industry", "Placements"],
               ["Apprentice", "Programs"],
             ].map(([t, s]) => (
-              <div key={t} className="rounded-2xl border border-white/15 bg-white/5 p-6 backdrop-blur">
+              <div
+                key={t}
+                className="rounded-2xl border border-white/15 bg-white/5 p-6 backdrop-blur"
+              >
                 <div className="text-2xl font-bold text-gold font-display">{t}</div>
                 <div className="text-sm text-navy-foreground/75 mt-1">{s}</div>
               </div>
@@ -346,7 +393,10 @@ function Index() {
           <SectionTitle>Built for learning, comfort and safety.</SectionTitle>
           <div className="mt-10 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
             {facilities.map((f) => (
-              <div key={f.label} className="rounded-xl border border-border bg-card px-4 py-5 flex items-center gap-3 hover:border-gold transition">
+              <div
+                key={f.label}
+                className="rounded-xl border border-border bg-card px-4 py-5 flex items-center gap-3 hover:border-gold transition"
+              >
                 <div className="h-9 w-9 rounded-lg bg-secondary text-navy grid place-items-center">
                   <f.icon className="h-4 w-4" />
                 </div>
@@ -374,14 +424,18 @@ function Index() {
           <div>
             <Eyebrow>Principal's Desk</Eyebrow>
             <blockquote className="mt-4 text-xl sm:text-2xl font-display text-foreground leading-snug">
-              "Since 2008, our institution has nurtured technical competence, innovation and
-              ethical values. With NBA-accredited diploma programs, a state-of-the-art IoT
-              Laboratory and 100% placements over the last three years, we remain committed to
-              transforming students into responsible citizens and skilled professionals."
+              "Since 2008, our institution has nurtured technical competence, innovation and ethical
+              values. With NBA-accredited diploma programs, a state-of-the-art IoT Laboratory and
+              100% placements over the last three years, we remain committed to transforming
+              students into responsible citizens and skilled professionals."
             </blockquote>
             <div className="mt-6">
-              <div className="font-semibold text-foreground">Prof. I.V.S.S. Srinivasa Rao, M.E.</div>
-              <div className="text-sm text-muted-foreground">Principal, Government Polytechnic, Anakapalli</div>
+              <div className="font-semibold text-foreground">
+                Prof. I.V.S.S. Srinivasa Rao, M.E.
+              </div>
+              <div className="text-sm text-muted-foreground">
+                Principal, Government Polytechnic, Anakapalli
+              </div>
             </div>
             <a href="#" className="mt-6 inline-flex items-center gap-1.5 text-navy font-medium">
               Read full message <ChevronRight className="h-4 w-4" />
@@ -404,7 +458,10 @@ function Index() {
           </div>
           <div className="mt-10 grid md:grid-cols-2 gap-4">
             {notices.map((n) => (
-              <article key={n.title} className="group rounded-2xl border border-border bg-card p-6 hover:border-gold transition flex gap-5">
+              <article
+                key={n.title}
+                className="group rounded-2xl border border-border bg-card p-6 hover:border-gold transition flex gap-5"
+              >
                 <div className="h-12 w-12 shrink-0 rounded-xl bg-navy text-gold grid place-items-center">
                   <Bell className="h-5 w-5" />
                 </div>
@@ -412,10 +469,15 @@ function Index() {
                   <div className="flex items-center gap-3 text-xs text-muted-foreground">
                     <span>{n.date}</span>
                     <span className="h-1 w-1 rounded-full bg-border" />
-                    <span className="text-gold-foreground/80 font-medium uppercase tracking-wide bg-gold/15 px-2 py-0.5 rounded">{n.tag}</span>
+                    <span className="text-gold-foreground/80 font-medium uppercase tracking-wide bg-gold/15 px-2 py-0.5 rounded">
+                      {n.tag}
+                    </span>
                   </div>
                   <h3 className="mt-2 font-semibold text-foreground text-lg">{n.title}</h3>
-                  <a href="#" className="mt-3 inline-flex items-center gap-1.5 text-sm text-navy font-medium">
+                  <a
+                    href="#"
+                    className="mt-3 inline-flex items-center gap-1.5 text-sm text-navy font-medium"
+                  >
                     <Download className="h-4 w-4" /> Download PDF
                   </a>
                 </div>
@@ -432,7 +494,10 @@ function Index() {
           <SectionTitle>A glimpse of Government Polytechnic, Anakapalli</SectionTitle>
           <div className="mt-10 grid grid-cols-2 md:grid-cols-3 gap-4">
             {gallery.map((g, i) => (
-              <div key={i} className={`overflow-hidden rounded-2xl bg-card border border-border ${i === 0 ? "md:row-span-2 md:col-span-2 aspect-square" : "aspect-[4/3]"}`}>
+              <div
+                key={i}
+                className={`overflow-hidden rounded-2xl bg-card border border-border ${i === 0 ? "md:row-span-2 md:col-span-2 aspect-square" : "aspect-[4/3]"}`}
+              >
                 <img
                   src={g.src}
                   alt={g.alt}
@@ -467,10 +532,18 @@ function Index() {
               </p>
             </div>
             <div className="space-y-5">
-              <ContactRow icon={MapPin} title="Address" value="Rebaka village, Anakapalli district, Andhra Pradesh" />
+              <ContactRow
+                icon={MapPin}
+                title="Address"
+                value="Rebaka village, Anakapalli district, Andhra Pradesh"
+              />
               <ContactRow icon={Phone} title="Phone" value="+91 90102 22173" />
               <ContactRow icon={Mail} title="Email" value="polytechnic.government173@gmail.com" />
-              <ContactRow icon={BookOpen} title="Office hours" value="Mon – Sat · 9:30 AM – 5:00 PM" />
+              <ContactRow
+                icon={BookOpen}
+                title="Office hours"
+                value="Mon – Sat · 9:30 AM – 5:00 PM"
+              />
             </div>
           </div>
         </div>
@@ -481,10 +554,14 @@ function Index() {
         <div className="mx-auto max-w-7xl px-4 py-14 grid md:grid-cols-4 gap-10">
           <div className="md:col-span-2">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-full bg-gold text-gold-foreground grid place-items-center font-display font-bold">GP</div>
+              <div className="h-10 w-10 rounded-full bg-gold text-gold-foreground grid place-items-center font-display font-bold">
+                GP
+              </div>
               <div>
                 <div className="font-display font-semibold">Government Polytechnic, Anakapalli</div>
-                <div className="text-xs text-navy-foreground/70">Knowledge is Power · Estd. 2008</div>
+                <div className="text-xs text-navy-foreground/70">
+                  Knowledge is Power · Estd. 2008
+                </div>
               </div>
             </div>
             <p className="mt-5 text-sm text-navy-foreground/75 max-w-md leading-relaxed">
@@ -496,7 +573,11 @@ function Index() {
             <div className="font-semibold text-gold">Quick links</div>
             <ul className="mt-4 space-y-2 text-sm text-navy-foreground/80">
               {nav.slice(1, 6).map((n) => (
-                <li key={n.label}><a href={n.href} className="hover:text-gold">{n.label}</a></li>
+                <li key={n.label}>
+                  <a href={n.href} className="hover:text-gold">
+                    {n.label}
+                  </a>
+                </li>
               ))}
             </ul>
           </div>
@@ -511,7 +592,9 @@ function Index() {
         </div>
         <div className="border-t border-white/10">
           <div className="mx-auto max-w-7xl px-4 py-5 text-xs text-navy-foreground/60 flex flex-wrap items-center justify-between gap-2">
-            <span>© {new Date().getFullYear()} Government Polytechnic, Anakapalli. All rights reserved.</span>
+            <span>
+              © {new Date().getFullYear()} Government Polytechnic, Anakapalli. All rights reserved.
+            </span>
             <span>Government of Andhra Pradesh</span>
           </div>
         </div>
@@ -520,9 +603,17 @@ function Index() {
   );
 }
 
-function Eyebrow({ children, tone = "default" }: { children: React.ReactNode; tone?: "default" | "gold" }) {
+function Eyebrow({
+  children,
+  tone = "default",
+}: {
+  children: React.ReactNode;
+  tone?: "default" | "gold";
+}) {
   return (
-    <div className={`inline-flex items-center gap-2 text-xs uppercase tracking-[0.18em] font-semibold ${tone === "gold" ? "text-gold" : "text-navy"}`}>
+    <div
+      className={`inline-flex items-center gap-2 text-xs uppercase tracking-[0.18em] font-semibold ${tone === "gold" ? "text-gold" : "text-navy"}`}
+    >
       <span className={`h-1.5 w-1.5 rounded-full ${tone === "gold" ? "bg-gold" : "bg-gold"}`} />
       {children}
     </div>
@@ -530,10 +621,22 @@ function Eyebrow({ children, tone = "default" }: { children: React.ReactNode; to
 }
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
-  return <h2 className="mt-3 text-3xl sm:text-4xl font-bold text-foreground leading-tight max-w-3xl">{children}</h2>;
+  return (
+    <h2 className="mt-3 text-3xl sm:text-4xl font-bold text-foreground leading-tight max-w-3xl">
+      {children}
+    </h2>
+  );
 }
 
-function ContactRow({ icon: Icon, title, value }: { icon: typeof Phone; title: string; value: string }) {
+function ContactRow({
+  icon: Icon,
+  title,
+  value,
+}: {
+  icon: typeof Phone;
+  title: string;
+  value: string;
+}) {
   return (
     <div className="flex gap-4">
       <div className="h-10 w-10 shrink-0 rounded-lg bg-navy text-gold grid place-items-center">

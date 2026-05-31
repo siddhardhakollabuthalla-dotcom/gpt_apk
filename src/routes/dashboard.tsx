@@ -1,8 +1,8 @@
 import { createFileRoute, Navigate } from "@tanstack/react-router";
-import AdminDashboard from "@/pages/AdminDashboard";
+import { Dashboard } from "@/auth/Dashboard";
 import { useAuth } from "@/auth/AuthContext";
 
-function AdminRoute() {
+function DashboardRoute() {
   const { isAuthenticated, loading } = useAuth();
 
   if (loading) {
@@ -17,17 +17,17 @@ function AdminRoute() {
     return <Navigate to="/Login" replace />;
   }
 
-  return <AdminDashboard />;
+  return <Dashboard />;
 }
 
-export const Route = createFileRoute("/Admin")({
-  component: AdminRoute,
+export const Route = createFileRoute("/dashboard")({
+  component: DashboardRoute,
   head: () => ({
     meta: [
-      { title: "Admin Dashboard - Government Polytechnic, Anakapalli" },
+      { title: "Auth Dashboard - Government Polytechnic, Anakapalli" },
       {
         name: "description",
-        content: "Admin dashboard for managing Government Polytechnic, Anakapalli events and data.",
+        content: "Persistent session dashboard for Government Polytechnic, Anakapalli admins.",
       },
     ],
   }),

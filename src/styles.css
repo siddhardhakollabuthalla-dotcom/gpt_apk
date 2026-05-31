@@ -64,7 +64,12 @@
   --gold: oklch(0.78 0.16 75);
   --gold-foreground: oklch(0.22 0.06 265);
 
-  --gradient-hero: linear-gradient(180deg, oklch(0.22 0.07 265 / 0.85) 0%, oklch(0.22 0.07 265 / 0.6) 60%, oklch(0.22 0.07 265 / 0.85) 100%);
+  --gradient-hero: linear-gradient(
+    180deg,
+    oklch(0.22 0.07 265 / 0.85) 0%,
+    oklch(0.22 0.07 265 / 0.6) 60%,
+    oklch(0.22 0.07 265 / 0.85) 100%
+  );
 }
 
 @layer base {
@@ -80,7 +85,10 @@
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
   }
-  h1, h2, h3, h4 {
+  h1,
+  h2,
+  h3,
+  h4 {
     font-family: var(--font-display);
     letter-spacing: -0.02em;
   }
