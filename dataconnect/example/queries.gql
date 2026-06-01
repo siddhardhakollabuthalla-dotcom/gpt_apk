@@ -1,4 +1,8 @@
-query AllClubs @auth(level: PUBLIC, insecureReason: "This operation is safe to expose to the public as it lists public club information.") {
+query AllClubs
+@auth(
+  level: PUBLIC
+  insecureReason: "This operation is safe to expose to the public as it lists public club information."
+) {
   clubs {
     id
     name
@@ -15,8 +19,12 @@ query AllClubs @auth(level: PUBLIC, insecureReason: "This operation is safe to e
   }
 }
 
-query MyFavoriteEvents @auth(level: USER, insecureReason: "This operation is safe to expose to all logged in users as it retrieves their personal favorite events.") {
-  favorites(where: {userId: {eq_expr: "auth.uid"}, event: {id: {isNull: false}}}) {
+query MyFavoriteEvents
+@auth(
+  level: USER
+  insecureReason: "This operation is safe to expose to all logged in users as it retrieves their personal favorite events."
+) {
+  favorites(where: { userId: { eq_expr: "auth.uid" }, event: { id: { isNull: false } } }) {
     id
     event {
       id
@@ -33,7 +41,20 @@ query MyFavoriteEvents @auth(level: USER, insecureReason: "This operation is saf
   }
 }
 
-mutation CreateEvent($title: String!, $description: String!, $date: Date!, $startTime: Timestamp!, $endTime: Timestamp!, $location: String!, $status: String!, $clubId: UUID) @auth(level: USER, insecureReason: "This operation is safe to expose to all logged in users as it allows them to create events.") {
+mutation CreateEvent(
+  $title: String!
+  $description: String!
+  $date: Date!
+  $startTime: Timestamp!
+  $endTime: Timestamp!
+  $location: String!
+  $status: String!
+  $clubId: UUID
+)
+@auth(
+  level: USER
+  insecureReason: "This operation is safe to expose to all logged in users as it allows them to create events."
+) {
   event_insert(
     data: {
       title: $title
@@ -50,12 +71,12 @@ mutation CreateEvent($title: String!, $description: String!, $date: Date!, $star
   )
 }
 
-mutation ToggleFavoriteEvent($eventId: UUID!) @auth(level: USER, insecureReason: "This operation is safe to expose to all logged in users as it allows them to manage their favorite events.") {
+mutation ToggleFavoriteEvent($eventId: UUID!)
+@auth(
+  level: USER
+  insecureReason: "This operation is safe to expose to all logged in users as it allows them to manage their favorite events."
+) {
   favorite_upsert(
-    data: {
-      userId_expr: "auth.uid",
-      eventId: $eventId,
-      createdAt_expr: "request.time"
-    }
+    data: { userId_expr: "auth.uid", eventId: $eventId, createdAt_expr: "request.time" }
   )
 }

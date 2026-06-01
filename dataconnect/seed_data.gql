@@ -1,94 +1,109 @@
-mutation CreateDemoData @transaction @auth(level: USER, insecureReason: "This operation is for seeding data and should only be run by authenticated users with appropriate permissions.") {
-  user_insertMany(data: [
-    {
-      id: "a1b2c3d4-e5f6-7890-1234-567890abcdef",
-      displayName: "Alice Smith",
-      email: "alice.smith@example.com",
-      createdAt: "2023-01-01T10:00:00Z",
-      role: "admin"
-    },
-    {
-      id: "f0e9d8c7-b6a5-4321-fedc-ba9876543210",
-      displayName: "Bob Johnson",
-      email: "bob.johnson@example.com",
-      createdAt: "2023-01-02T11:00:00Z",
-      photoUrl: "https://example.com/bob.jpg"
-    }
-  ])
-  club_insertMany(data: [
-    {
-      id: "11111111-2222-3333-4444-555555555555",
-      name: "Chess Club",
-      description: "A club for chess enthusiasts.",
-      createdAt: "2023-01-05T09:00:00Z",
-      contactEmail: "chessclub@example.com",
-      creatorId: "a1b2c3d4-e5f6-7890-1234-567890abcdef"
-    },
-    {
-      id: "22222222-3333-4444-5555-666666666666",
-      name: "Book Lovers Society",
-      description: "Reading and discussing books of various genres.",
-      createdAt: "2023-01-06T14:00:00Z",
-      websiteUrl: "https://booklovers.example.com",
-      creatorId: "f0e9d8c7-b6a5-4321-fedc-ba9876543210"
-    }
-  ])
-  event_insertMany(data: [
-    {
-      id: "aaaabbbb-cccc-dddd-eeee-ffffffffffff",
-      title: "Weekly Chess Tournament",
-      description: "Friendly chess tournament for all skill levels.",
-      date: "2023-10-26",
-      startTime: "2023-10-26T18:00:00Z",
-      endTime: "2023-10-26T21:00:00Z",
-      location: "Community Center",
-      createdAt: "2023-10-20T10:00:00Z",
-      status: "Active",
-      clubId: "11111111-2222-3333-4444-555555555555"
-    },
-    {
-      id: "00001111-2222-3333-4444-555566667777",
-      title: "Sci-Fi Book Discussion",
-      description: "Discussion of the latest sci-fi bestseller.",
-      date: "2023-11-15",
-      startTime: "2023-11-15T19:00:00Z",
-      endTime: "2023-11-15T20:30:00Z",
-      location: "Online (Zoom)",
-      createdAt: "2023-11-01T15:00:00Z",
-      status: "Active",
-      clubId: "22222222-3333-4444-5555-666666666666"
-    }
-  ])
-  resource_insertMany(data: [
-    {
-      id: "fedcba98-7654-3210-abcd-ef0123456789",
-      name: "Online Chess Platform",
-      description: "Website for playing chess online.",
-      category: "Online Tool",
-      createdAt: "2023-01-10T08:00:00Z",
-      websiteUrl: "https://www.chess.com"
-    },
-    {
-      id: "98765432-10fe-dcba-9876-543210fedcba",
-      name: "Local Library",
-      description: "Community library with a wide selection of books.",
-      category: "Physical Location",
-      createdAt: "2023-01-12T13:00:00Z",
-      location: "123 Main St, Anytown"
-    }
-  ])
-  favorite_insertMany(data: [
-    {
-      id: "fedcba98-7654-3210-abcd-ef0123456789",
-      createdAt: "2023-10-25T14:30:00Z",
-      userId: "a1b2c3d4-e5f6-7890-1234-567890abcdef",
-      eventId: "aaaabbbb-cccc-dddd-eeee-ffffffffffff"
-    },
-    {
-      id: "1a2b3c4d-5e6f-7890-1234-567890abcdef",
-      createdAt: "2023-11-05T09:15:00Z",
-      userId: "f0e9d8c7-b6a5-4321-fedc-ba9876543210",
-      clubId: "22222222-3333-4444-5555-666666666666"
-    }
-  ])
+mutation CreateDemoData
+@transaction
+@auth(
+  level: USER
+  insecureReason: "This operation is for seeding data and should only be run by authenticated users with appropriate permissions."
+) {
+  user_insertMany(
+    data: [
+      {
+        id: "a1b2c3d4-e5f6-7890-1234-567890abcdef"
+        displayName: "Alice Smith"
+        email: "alice.smith@example.com"
+        createdAt: "2023-01-01T10:00:00Z"
+        role: "admin"
+      }
+      {
+        id: "f0e9d8c7-b6a5-4321-fedc-ba9876543210"
+        displayName: "Bob Johnson"
+        email: "bob.johnson@example.com"
+        createdAt: "2023-01-02T11:00:00Z"
+        photoUrl: "https://example.com/bob.jpg"
+      }
+    ]
+  )
+  club_insertMany(
+    data: [
+      {
+        id: "11111111-2222-3333-4444-555555555555"
+        name: "Chess Club"
+        description: "A club for chess enthusiasts."
+        createdAt: "2023-01-05T09:00:00Z"
+        contactEmail: "chessclub@example.com"
+        creatorId: "a1b2c3d4-e5f6-7890-1234-567890abcdef"
+      }
+      {
+        id: "22222222-3333-4444-5555-666666666666"
+        name: "Book Lovers Society"
+        description: "Reading and discussing books of various genres."
+        createdAt: "2023-01-06T14:00:00Z"
+        websiteUrl: "https://booklovers.example.com"
+        creatorId: "f0e9d8c7-b6a5-4321-fedc-ba9876543210"
+      }
+    ]
+  )
+  event_insertMany(
+    data: [
+      {
+        id: "aaaabbbb-cccc-dddd-eeee-ffffffffffff"
+        title: "Weekly Chess Tournament"
+        description: "Friendly chess tournament for all skill levels."
+        date: "2023-10-26"
+        startTime: "2023-10-26T18:00:00Z"
+        endTime: "2023-10-26T21:00:00Z"
+        location: "Community Center"
+        createdAt: "2023-10-20T10:00:00Z"
+        status: "Active"
+        clubId: "11111111-2222-3333-4444-555555555555"
+      }
+      {
+        id: "00001111-2222-3333-4444-555566667777"
+        title: "Sci-Fi Book Discussion"
+        description: "Discussion of the latest sci-fi bestseller."
+        date: "2023-11-15"
+        startTime: "2023-11-15T19:00:00Z"
+        endTime: "2023-11-15T20:30:00Z"
+        location: "Online (Zoom)"
+        createdAt: "2023-11-01T15:00:00Z"
+        status: "Active"
+        clubId: "22222222-3333-4444-5555-666666666666"
+      }
+    ]
+  )
+  resource_insertMany(
+    data: [
+      {
+        id: "fedcba98-7654-3210-abcd-ef0123456789"
+        name: "Online Chess Platform"
+        description: "Website for playing chess online."
+        category: "Online Tool"
+        createdAt: "2023-01-10T08:00:00Z"
+        websiteUrl: "https://www.chess.com"
+      }
+      {
+        id: "98765432-10fe-dcba-9876-543210fedcba"
+        name: "Local Library"
+        description: "Community library with a wide selection of books."
+        category: "Physical Location"
+        createdAt: "2023-01-12T13:00:00Z"
+        location: "123 Main St, Anytown"
+      }
+    ]
+  )
+  favorite_insertMany(
+    data: [
+      {
+        id: "fedcba98-7654-3210-abcd-ef0123456789"
+        createdAt: "2023-10-25T14:30:00Z"
+        userId: "a1b2c3d4-e5f6-7890-1234-567890abcdef"
+        eventId: "aaaabbbb-cccc-dddd-eeee-ffffffffffff"
+      }
+      {
+        id: "1a2b3c4d-5e6f-7890-1234-567890abcdef"
+        createdAt: "2023-11-05T09:15:00Z"
+        userId: "f0e9d8c7-b6a5-4321-fedc-ba9876543210"
+        clubId: "22222222-3333-4444-5555-666666666666"
+      }
+    ]
+  )
 }
